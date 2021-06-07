@@ -1,4 +1,4 @@
-package org.gypsophila.athena.server;/*
+/*
  * Copyright 2021 Gypsophila open source organization.
  *
  * Licensed under the Apache License,Version2.0(the"License");
@@ -13,15 +13,18 @@ package org.gypsophila.athena.server;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.gypsophila.athena.server.pojo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.List;
 
-@SpringBootApplication
-public class AthenaServerApplication {
+/**
+ * Service model.
+ */
+public class Service {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AthenaServerApplication.class, args);
-    }
+    private String name;
 
+    private String nameSpaceId;
+
+    private List<Instance> instances;
 }
