@@ -1,3 +1,7 @@
 server:
   port: 8888
-
+  servlet:
+    context-path: /athena-server
+spring:
+  application:
+    name: athena-server

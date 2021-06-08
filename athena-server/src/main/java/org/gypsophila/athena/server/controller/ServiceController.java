@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.gypsophila.athena.server.controller;
 
 import org.gypsophila.athena.common.Response;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-@RestController("v1/service")
+@RestController
+@RequestMapping("v1/service")
 public class ServiceController {
-
+    
     @RequestMapping(path = "/register")
     public Response register(HttpServletRequest httpServletRequest) {
-
+        
         Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
         System.out.println(parameterMap.toString());
         return new Response();
-    }
-
-    @RequestMapping(path = "ok")
-    public String ok(){
-        return "";
     }
 }
