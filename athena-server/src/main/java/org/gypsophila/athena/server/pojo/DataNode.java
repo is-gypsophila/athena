@@ -37,7 +37,7 @@ public class DataNode {
      */
     public synchronized boolean addChild(String child) {
         if (children == null) {
-            children = new HashSet<String>(8);
+            children = new HashSet<>(8);
         }
         return children.add(child);
     }
