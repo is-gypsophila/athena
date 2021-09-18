@@ -1,2 +1,2 @@
 # athena
-Easy-to-use service registration and service discovery
+Easy-to-use memory management utilizations.
