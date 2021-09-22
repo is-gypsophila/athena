@@ -20,6 +20,7 @@
         <module>athena-common</module>
         <module>athena-client</module>
         <module>athena-server</module>
+        <module>athena-spi</module>
     </modules>
     
     <properties>
