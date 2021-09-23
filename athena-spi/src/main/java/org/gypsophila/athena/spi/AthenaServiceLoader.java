@@ -22,16 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Athena spi service loader.
  */
-public class AthenaLoader {
+public class AthenaServiceLoader {
 
     private  static final String PREFIX = "META-INF/athena/";
 
-    private static final AthenaLoader INSTANCE = new AthenaLoader();
+    private static final AthenaServiceLoader INSTANCE = new AthenaServiceLoader();
 
     private static final Map<Class<?>, Collection<Class<?>>> SERVICES = new ConcurrentHashMap<>();
 
 
-    private AthenaLoader() {
+    private AthenaServiceLoader() {
     }
 
     /**
@@ -39,7 +39,7 @@ public class AthenaLoader {
      *
      * @return AthenaLoader
      */
-    public static AthenaLoader instance() {
+    public static AthenaServiceLoader instance() {
         return INSTANCE;
     }
 
