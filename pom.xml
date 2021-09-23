@@ -28,6 +28,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <springboot.version>2.2.6.RELEASE</springboot.version>
         <commons-lang3.version>3.4</commons-lang3.version>
+        <junit4.version>4.12</junit4.version>
     </properties>
     
     <dependencies>
@@ -47,6 +48,12 @@
                 <version>${springboot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit4.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

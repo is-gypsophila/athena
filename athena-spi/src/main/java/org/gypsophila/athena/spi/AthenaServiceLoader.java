@@ -18,27 +18,28 @@ package org.gypsophila.athena.spi;
 
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Athena spi service loader.
+ *
+ * @author lixiaoshuang
  */
 public class AthenaServiceLoader {
-    
-    private static final String PREFIX = "META-INF/athena/";
-    
+
+    private static final String PREFIX = "athena/";
+
     private static final AthenaServiceLoader INSTANCE = new AthenaServiceLoader();
-    
+
     private static final Map<String, ConcurrentHashMap<String, Class<?>>> SERVICES = new ConcurrentHashMap<>();
-    
-    
+
+
     private AthenaServiceLoader() {
     }
-    
+
     /**
      * Getting instance
      *
@@ -47,8 +48,8 @@ public class AthenaServiceLoader {
     public static AthenaServiceLoader instance() {
         return INSTANCE;
     }
-    
-    
+
+
     /**
      * Load interface implementation class.
      *
@@ -56,7 +57,7 @@ public class AthenaServiceLoader {
      * @param classLoader
      * @throws IOException
      */
-    public void load(Class<?> clazz, ClassLoader classLoader) throws IOException {
+    public AthenaServiceLoader load(Class<?> clazz, ClassLoader classLoader) throws IOException {
         if (null == classLoader) {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
@@ -69,8 +70,9 @@ public class AthenaServiceLoader {
             URL url = resources.nextElement();
             loadResource(url, clazzName);
         }
+        return this;
     }
-    
+
     private void loadResource(URL url, String name) throws IOException {
         if (null == url) {
             return;
@@ -82,27 +84,77 @@ public class AthenaServiceLoader {
         }
         properties.forEach((k, v) -> {
             try {
-                Class<?> aClass = Class.forName((String) k);
-                ConcurrentHashMap<String, Class<?>> classConcurrentHashMap = SERVICES.get(name);
-                if (null == classConcurrentHashMap){
-                    classConcurrentHashMap = new ConcurrentHashMap<>();
-                    SERVICES.put(name,classConcurrentHashMap);
+                synchronized (SERVICES) {
+                    Class<?> aClass = Class.forName((String) k);
+                    ConcurrentHashMap<String, Class<?>> classConcurrentHashMap = SERVICES.get(name);
+                    if (null == classConcurrentHashMap) {
+                        classConcurrentHashMap = new ConcurrentHashMap<>();
+                        SERVICES.put(name, classConcurrentHashMap);
+                    }
+                    classConcurrentHashMap.putIfAbsent((String) k, aClass);
                 }
-                classConcurrentHashMap.putIfAbsent((String) k,aClass);
             } catch (ClassNotFoundException e) {
                 throw new AthenaLoaderException("load class error");
             }
         });
     }
-    
-    public void initializeLoad() {
-    
+
+    /**
+     * Gets an instance of the specified implementation class
+     *
+     * @param implClass
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    public <R> R getOneService(Class<R> implClass) throws Exception {
+        if (Objects.isNull(implClass)) {
+            return null;
+        }
+        if (implClass.isInterface()) {
+            throw new AthenaLoaderException("Specific implementation classes need to be specified");
+        }
+        String interfaceName = implClass.getInterfaces().length > 0 ? implClass.getInterfaces()[0].getName() : "";
+        ConcurrentHashMap<String, Class<?>> instanceMap = SERVICES.get(interfaceName);
+        if (null == instanceMap) {
+            return null;
+        }
+        Class<?> aClass = instanceMap.get(implClass.getName());
+        if (null == aClass) {
+            return null;
+        }
+        Constructor<R> constructor = (Constructor<R>) aClass.getConstructor();
+        return constructor.newInstance();
     }
-    
-    public static void main(String[] args) throws IOException {
-        AthenaServiceLoader.instance().load(DemoSpi.class, DemoSpi.class.getClassLoader());
-        AthenaServiceLoader.instance().load(TestSpi.class, TestSpi.class.getClassLoader());
+
+    /**
+     * Gets instances of all implementation classes
+     *
+     * @param interfaceClass
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    public <R> Map<String, R> getAllService(Class<R> interfaceClass) throws Exception {
+        if (Objects.isNull(interfaceClass)) {
+            return null;
+        }
+        if (!interfaceClass.isInterface()) {
+            throw new AthenaLoaderException("The service interface needs to be specified");
+        }
+        Map<String, Class<?>> instanceMap = SERVICES.get(interfaceClass.getName());
+        if (null == instanceMap) {
+            return null;
+        }
+        Map<String, R> resultMap = new HashMap<>();
+        for (Map.Entry<String, Class<?>> entry : instanceMap.entrySet()) {
+            String key = entry.getKey();
+            Class<?> value = entry.getValue();
+            Constructor<R> constructor = (Constructor<R>) value.getConstructor();
+            resultMap.put(key, constructor.newInstance());
+        }
+        return resultMap;
     }
-    
+
 }
 
