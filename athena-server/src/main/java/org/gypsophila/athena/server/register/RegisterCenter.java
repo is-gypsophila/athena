@@ -16,13 +16,15 @@
 
 package org.gypsophila.athena.server.register;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.gypsophila.athena.server.exception.BizException;
 import org.gypsophila.athena.server.pojo.Instance;
 import org.gypsophila.athena.server.pojo.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -34,28 +36,30 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author lixiaoshuang
  */
 public class RegisterCenter {
-    
+
     /**
      * Register node storage service
      */
     private static final Map<String, Map<String, Set<Instance>>> REGISTER_DATE = new ConcurrentHashMap<>(16);
-    
+
+    private static final Log log = LogFactory.getLog(RegisterCenter.class);
+
     private static final RegisterCenter REGISTER_CENTER = new RegisterCenter();
-    
+
     private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
-    
+
     private final Lock readLock = reentrantReadWriteLock.readLock();
-    
+
     private final Lock writeLock = reentrantReadWriteLock.writeLock();
-    
+
     private RegisterCenter() {
-    
+
     }
-    
+
     public RegisterCenter build() {
         return REGISTER_CENTER;
     }
-    
+
     /**
      * Register a node
      *
@@ -83,7 +87,7 @@ public class RegisterCenter {
             writeLock.unlock();
         }
     }
-    
+
     /**
      * Parameter verification
      *
@@ -96,11 +100,14 @@ public class RegisterCenter {
         if (StringUtils.isBlank(service.getNameSpace())) {
             throw new BizException("namespace is null!");
         }
+        if (StringUtils.isBlank(service.getServiceName())) {
+            throw new BizException("serviceName is null");
+        }
         if (Objects.isNull(service.getInstance())) {
             throw new BizException("instance is null!");
         }
     }
-    
+
     /**
      * Cancel a node
      *
@@ -108,8 +115,23 @@ public class RegisterCenter {
      */
     public void cancel(Service service) {
         checkParam(service);
+        writeLock.lock();
+        try {
+            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNameSpace());
+            if (null == serviceMap) {
+                throw new BizException("namespace not exist!");
+            }
+            Set<Instance> instances = serviceMap.get(service.getServiceName());
+            if (null == instances) {
+                log.info("no instance registered,service:" + JSON.toJSONString(service));
+                return;
+            }
+            instances.remove(service.getInstance());
+        } finally {
+            writeLock.unlock();
+        }
     }
-    
+
     /**
      * Get the list of service nodes
      *
@@ -117,9 +139,24 @@ public class RegisterCenter {
      * @param serviceName
      * @return
      */
-    public List<Instance> instanceList(String namespace, String serviceName) {
-        return null;
+    public Set<Instance> instanceList(String namespace, String serviceName) {
+        if (StringUtils.isBlank(namespace)) {
+            throw new BizException("namespace is null!");
+        }
+        if (StringUtils.isBlank(serviceName)) {
+            throw new BizException("serviceName is null");
+        }
+        readLock.lock();
+        try {
+            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(namespace);
+            if (null == serviceMap) {
+                return null;
+            }
+            return serviceMap.get(serviceName);
+        } finally {
+            readLock.unlock();
+        }
     }
-    
-    
+
+
 }
