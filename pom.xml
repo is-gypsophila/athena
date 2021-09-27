@@ -29,6 +29,8 @@
         <springboot.version>2.2.6.RELEASE</springboot.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <junit4.version>4.12</junit4.version>
+        <lombok.version>1.18.20</lombok.version>
+        <guava.version>20.0</guava.version>
     </properties>
     
     <dependencies>
@@ -36,6 +38,17 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     
