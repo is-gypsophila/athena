@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gypsophila.athena.common;
 
-public enum ErrorCode {
-    /**
-     * Error code.
-     */
-    SYSTEM_ERROR(10000, "系统错误"),
-    PARAM_ERROR(10001, "参数错误"),
-    ;
-    private Integer code;
+package org.gypsophila.athena.client.config;
 
-    private String message;
+/**
+ * @author lixiaoshuang
+ */
 
-    ErrorCode(Integer code, String message) {
-        this.code = code;
-        this.message = message;
-    }
+public class AthenaConfig {
+    
+    private String namespace;
+    
+    private String serviceName;
+    
 }

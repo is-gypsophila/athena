@@ -21,9 +21,9 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gypsophila.athena.server.exception.BizException;
-import org.gypsophila.athena.server.pojo.Instance;
-import org.gypsophila.athena.server.pojo.Service;
+import org.gypsophila.athena.common.exception.AthenaException;
+import org.gypsophila.athena.common.pojo.Instance;
+import org.gypsophila.athena.common.pojo.Service;
 
 import java.util.Map;
 import java.util.Objects;
@@ -56,7 +56,7 @@ public class RegisterCenter {
 
     }
 
-    public RegisterCenter build() {
+    public static RegisterCenter single() {
         return REGISTER_CENTER;
     }
 
@@ -69,11 +69,11 @@ public class RegisterCenter {
         checkParam(service);
         writeLock.lock();
         try {
-            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNameSpace());
+            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNamespace());
             if (null == serviceMap) {
                 serviceMap = new ConcurrentHashMap<>(16);
                 serviceMap.put(service.getServiceName(), Sets.newHashSet(service.getInstance()));
-                REGISTER_DATE.put(service.getServiceName(), serviceMap);
+                REGISTER_DATE.put(service.getNamespace(), serviceMap);
             } else {
                 Set<Instance> instanceSet = serviceMap.get(service.getServiceName());
                 if (null == instanceSet) {
@@ -95,16 +95,16 @@ public class RegisterCenter {
      */
     private void checkParam(Service service) {
         if (Objects.isNull(service)) {
-            throw new BizException("service is null!");
+            throw new AthenaException("service is null!");
         }
-        if (StringUtils.isBlank(service.getNameSpace())) {
-            throw new BizException("namespace is null!");
+        if (StringUtils.isBlank(service.getNamespace())) {
+            throw new AthenaException("namespace is null!");
         }
         if (StringUtils.isBlank(service.getServiceName())) {
-            throw new BizException("serviceName is null");
+            throw new AthenaException("serviceName is null");
         }
         if (Objects.isNull(service.getInstance())) {
-            throw new BizException("instance is null!");
+            throw new AthenaException("instance is null!");
         }
     }
 
@@ -117,9 +117,9 @@ public class RegisterCenter {
         checkParam(service);
         writeLock.lock();
         try {
-            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNameSpace());
+            Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNamespace());
             if (null == serviceMap) {
-                throw new BizException("namespace not exist!");
+                throw new AthenaException("namespace not exist!");
             }
             Set<Instance> instances = serviceMap.get(service.getServiceName());
             if (null == instances) {
@@ -141,10 +141,10 @@ public class RegisterCenter {
      */
     public Set<Instance> instanceList(String namespace, String serviceName) {
         if (StringUtils.isBlank(namespace)) {
-            throw new BizException("namespace is null!");
+            throw new AthenaException("namespace is null!");
         }
         if (StringUtils.isBlank(serviceName)) {
-            throw new BizException("serviceName is null");
+            throw new AthenaException("serviceName is null");
         }
         readLock.lock();
         try {

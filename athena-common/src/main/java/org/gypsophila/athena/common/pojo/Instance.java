@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gypsophila.athena.common;
 
-public class Response<T> {
+package org.gypsophila.athena.common.pojo;
 
-    private int code;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    private String message;
-
-    private T data;
-
+/**
+ * @author lixiaoshuang
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Instance {
+    
+    private String ip;
+    
+    private int port;
+    
+    private boolean health;
 }

@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.server.pojo;
+package org.gypsophila.athena.client.remote;
 
-import lombok.Data;
+import org.gypsophila.athena.common.pojo.Response;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author lixiaoshuang
  */
-@Data
-public class Service {
+public interface AthenaRemoteCallTemplate {
     
-    public String nameSpace;
+    /**
+     * Execute get request
+     *
+     * @param url      target address
+     * @param paramMap parameter
+     * @return
+     */
+    <T> Response<T> doGet(String url, Map<String, Object> paramMap, Class<T> clazz) throws IOException;
     
-    public String serviceName;
-    
-    public Instance instance;
-    
+    /**
+     * Execute post request
+     *
+     * @param url
+     * @param paramMap
+     * @return
+     */
+    <T> Response<T> doPost(String url, Map<String, Object> paramMap, Class<T> clazz) throws IOException;
 }

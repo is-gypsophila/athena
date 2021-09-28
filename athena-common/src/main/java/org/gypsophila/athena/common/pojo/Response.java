@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.server.exception;
+package org.gypsophila.athena.common.pojo;
 
-/**
- * @author lixiaoshuang
- */
-public class BizException extends RuntimeException {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Response<T> {
     
-    public BizException(String message) {
-        super(message);
-    }
+    private int code;
+    
+    private String message;
+    
+    private T data;
+    
 }

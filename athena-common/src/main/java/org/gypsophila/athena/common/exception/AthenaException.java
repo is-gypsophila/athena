@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.server.pojo;
-
-import lombok.Data;
+package org.gypsophila.athena.common.exception;
 
 /**
  * @author lixiaoshuang
  */
-@Data
-public class Instance {
+public class AthenaException extends RuntimeException {
     
-    private String ip;
+    private int errorCode;
     
-    private int port;
+    private String errorMessage;
     
-    private int health;
+    public AthenaException(String errorMessage) {
+        super(errorMessage);
+    }
+    
+    public AthenaException(int errorCode, String errorMessage) {
+        super(errorMessage);
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 }
