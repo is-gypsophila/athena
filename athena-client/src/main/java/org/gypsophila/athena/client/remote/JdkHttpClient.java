@@ -17,8 +17,10 @@
 package org.gypsophila.athena.client.remote;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.gypsophila.athena.common.pojo.Response;
+import org.gypsophila.athena.common.util.ResponseUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +45,7 @@ public class JdkHttpClient implements AthenaRemoteCallTemplate {
     
     @Override
     public <T> Response<T> doGet(String url, Map<String, Object> paramMap, Class<T> clazz) throws IOException {
-        if (null != paramMap) {
+        if (null != paramMap && !paramMap.isEmpty()) {
             List<String> paramList = paramMap.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
                     .collect(Collectors.toList());
             url = url + "?" + String.join("&", paramList);
@@ -56,7 +58,7 @@ public class JdkHttpClient implements AthenaRemoteCallTemplate {
         urlConnection.connect();
         
         if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            return new Response<>(urlConnection.getResponseCode(), urlConnection.getResponseMessage(), null);
+            return ResponseUtil.fail(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
         }
         StringBuffer response = new StringBuffer();
         try (BufferedReader bufferedReader = new BufferedReader(
@@ -70,9 +72,10 @@ public class JdkHttpClient implements AthenaRemoteCallTemplate {
             urlConnection.disconnect();
         }
         if (StringUtils.isBlank(response)) {
-            return new Response<>(urlConnection.getResponseCode(), urlConnection.getResponseMessage(), null);
+            return ResponseUtil.fail(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
         }
-        return JSON.parseObject(response.toString(),clazz );
+        return JSON.parseObject(response.toString(), new TypeReference<Response<T>>(clazz) {
+        });
     }
     
     @Override
@@ -86,14 +89,20 @@ public class JdkHttpClient implements AthenaRemoteCallTemplate {
         urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         urlConnection.connect();
         
-        OutputStream outputStream = urlConnection.getOutputStream();
-        // 通过输出流对象将参数写出去/传输出去,它是通过字节数组写出的
-        outputStream.write(JSON.toJSONString(paramMap).getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
-        if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            return new Response<>(urlConnection.getResponseCode(), urlConnection.getResponseMessage(), null);
+        if (null != paramMap && !paramMap.isEmpty()) {
+            String paramStr;
+            List<String> paramList = paramMap.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+                    .collect(Collectors.toList());
+            paramStr = String.join("&", paramList);
+            
+            OutputStream outputStream = urlConnection.getOutputStream();
+            outputStream.write(paramStr.getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
         }
         
+        if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            return ResponseUtil.fail(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
+        }
         StringBuffer response = new StringBuffer();
         try (BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8))) {
@@ -106,8 +115,9 @@ public class JdkHttpClient implements AthenaRemoteCallTemplate {
             urlConnection.disconnect();
         }
         if (StringUtils.isBlank(response)) {
-            return new Response<>(urlConnection.getResponseCode(), urlConnection.getResponseMessage(), null);
+            return ResponseUtil.fail(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
         }
-        return JSON.parseObject(response.toString(), type);
+        return JSON.parseObject(response.toString(), new TypeReference<Response<T>>(clazz) {
+        });
     }
 }

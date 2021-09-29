@@ -18,6 +18,8 @@ package org.gypsophila.athena.client.api.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.gypsophila.athena.client.api.RegisterService;
+import org.gypsophila.athena.client.remote.AthenaRemoteCallTemplate;
+import org.gypsophila.athena.client.remote.JdkHttpClient;
 import org.gypsophila.athena.common.enums.ErrorCode;
 import org.gypsophila.athena.common.exception.AthenaException;
 
@@ -27,6 +29,8 @@ import org.gypsophila.athena.common.exception.AthenaException;
 public class AthenaRegisterService implements RegisterService {
     
     private final boolean defaultHealth = true;
+    
+    private AthenaRemoteCallTemplate athenaRemoteCallTemplate = new JdkHttpClient();
     
     
     @Override
@@ -53,6 +57,6 @@ public class AthenaRegisterService implements RegisterService {
         if (port <= 0) {
             throw new AthenaException(ErrorCode.PORT_INVALID.getCode(), ErrorCode.PORT_INVALID.getMessage());
         }
-        
+//        athenaRemoteCallTemplate.doPost();
     }
 }

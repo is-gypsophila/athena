@@ -29,18 +29,24 @@ public interface AthenaRemoteCallTemplate {
     /**
      * Execute get request
      *
-     * @param url      target address
-     * @param paramMap parameter
+     * @param url      target url
+     * @param paramMap param set
+     * @param clazz    Return value type
+     * @param <T>
      * @return
+     * @throws IOException
      */
     <T> Response<T> doGet(String url, Map<String, Object> paramMap, Class<T> clazz) throws IOException;
     
     /**
      * Execute post request
      *
-     * @param url
-     * @param paramMap
+     * @param url      target url
+     * @param paramMap param set
+     * @param clazz    Return value type
+     * @param <T>
      * @return
+     * @throws IOException
      */
     <T> Response<T> doPost(String url, Map<String, Object> paramMap, Class<T> clazz) throws IOException;
 }

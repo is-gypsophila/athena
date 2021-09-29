@@ -20,15 +20,24 @@ import lombok.Getter;
 
 public enum ErrorCode {
     /**
+     * common code
+     */
+    SUCCESS(0, "success"),
+    FAIL(-1, "fail"),
+    
+    /**
      * Error code.
      */
     SYSTEM_ERROR(10000, "system error"),
+    
     PARAM_ERROR(10001, "param error"),
     
-    
     NAMESPACE_NULL(20000, "namespace cannot be null"),
+    
     SERVICE_NAME_NULL(20001, "serviceName cannot be null"),
+    
     IP_NULL(20002, "ip  cannot  be null"),
+    
     PORT_INVALID(20003, "this port is invalid");
     
     @Getter
