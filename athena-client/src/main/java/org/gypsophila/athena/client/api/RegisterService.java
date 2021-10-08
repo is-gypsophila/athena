@@ -16,6 +16,11 @@
 
 package org.gypsophila.athena.client.api;
 
+import org.gypsophila.athena.common.pojo.Instance;
+
+import java.io.IOException;
+import java.util.Set;
+
 /**
  * @author lixiaoshuang
  */
@@ -28,7 +33,7 @@ public interface RegisterService {
      * @param ip          service ip
      * @param port        service port
      */
-    void register(String serviceName, String ip, int port);
+    void register(String serviceName, String ip, int port) throws IOException;
     
     /**
      * Register the instance to the designated space and service
@@ -38,5 +43,24 @@ public interface RegisterService {
      * @param ip          service ip
      * @param port        service port
      */
-    void register(String namespace, String serviceName, String ip, int port);
+    void register(String namespace, String serviceName, String ip, int port) throws IOException;
+    
+    /**
+     * Unregister a service instance
+     *
+     * @param namespace   namespace
+     * @param serviceName service name
+     * @param ip          service ip
+     * @param port        service port
+     */
+    void cancel(String namespace, String serviceName, String ip, int port) throws IOException;
+    
+    
+    /**
+     * Get all instances of the service
+     *
+     * @param namespace
+     * @param serviceName
+     */
+    Set<Instance> instanceList(String namespace, String serviceName) throws IOException;
 }

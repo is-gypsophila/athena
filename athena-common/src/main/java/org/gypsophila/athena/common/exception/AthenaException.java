@@ -16,9 +16,14 @@
 
 package org.gypsophila.athena.common.exception;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * @author lixiaoshuang
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class AthenaException extends RuntimeException {
     
     private int errorCode;

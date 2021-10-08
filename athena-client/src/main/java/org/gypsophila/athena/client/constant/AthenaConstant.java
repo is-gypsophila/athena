@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.server.controller;
-
-import org.gypsophila.athena.common.pojo.Response;
-import org.gypsophila.athena.common.util.ResponseUtil;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
+package org.gypsophila.athena.client.constant;
 
 /**
  * @author lixiaoshuang
  */
-@RestController
-@RequestMapping(path = "v1/register/center")
-public class RegisterContorller {
+public class AthenaConstant {
     
+    public static final String NAMESPACE = "namespace";
     
-    @PostMapping(path = "instace")
-    public Response<Void> register(HttpServletRequest httpServletRequest) {
-        return ResponseUtil.success();
-    }
+    public static final String SERVICE_NAME = "serviceName";
+    
+    public static final String IP = "ip";
+    
+    public static final String PORT = "port";
 }

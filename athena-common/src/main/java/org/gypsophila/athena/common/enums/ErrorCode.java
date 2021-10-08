@@ -23,10 +23,11 @@ public enum ErrorCode {
      * common code
      */
     SUCCESS(0, "success"),
+    
     FAIL(-1, "fail"),
     
     /**
-     * Error code.
+     * check error
      */
     SYSTEM_ERROR(10000, "system error"),
     
@@ -38,7 +39,15 @@ public enum ErrorCode {
     
     IP_NULL(20002, "ip  cannot  be null"),
     
-    PORT_INVALID(20003, "this port is invalid");
+    PORT_INVALID(20003, "this port is invalid"),
+    
+    /**
+     * business error
+     */
+    REGISTER_FAIL(30000, "Failed to register service"),
+    
+    CANCEL_FAIL(30001, "Failed to cancel service");
+    
     
     @Getter
     private Integer code;
