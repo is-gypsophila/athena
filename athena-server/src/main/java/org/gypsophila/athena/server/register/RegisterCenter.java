@@ -36,30 +36,30 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author lixiaoshuang
  */
 public class RegisterCenter {
-
+    
     /**
      * Register node storage service
      */
     private static final Map<String, Map<String, Set<Instance>>> REGISTER_DATE = new ConcurrentHashMap<>(16);
-
+    
     private static final Log log = LogFactory.getLog(RegisterCenter.class);
-
+    
     private static final RegisterCenter REGISTER_CENTER = new RegisterCenter();
-
+    
     private final ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
-
+    
     private final Lock readLock = reentrantReadWriteLock.readLock();
-
+    
     private final Lock writeLock = reentrantReadWriteLock.writeLock();
-
+    
     private RegisterCenter() {
-
+    
     }
-
+    
     public static RegisterCenter single() {
         return REGISTER_CENTER;
     }
-
+    
     /**
      * Register a node
      *
@@ -87,7 +87,7 @@ public class RegisterCenter {
             writeLock.unlock();
         }
     }
-
+    
     /**
      * Parameter verification
      *
@@ -107,7 +107,7 @@ public class RegisterCenter {
             throw new AthenaException("instance is null!");
         }
     }
-
+    
     /**
      * Cancel a node
      *
@@ -131,7 +131,7 @@ public class RegisterCenter {
             writeLock.unlock();
         }
     }
-
+    
     /**
      * Get the list of service nodes
      *
@@ -157,6 +157,32 @@ public class RegisterCenter {
             readLock.unlock();
         }
     }
-
-
+    
+    /**
+     * Service instance heartbeat renewal
+     *
+     * @param service
+     */
+    public void renewal(Service service) {
+        checkParam(service);
+        Map<String, Set<Instance>> serviceMap = REGISTER_DATE.get(service.getNamespace());
+        if (null == serviceMap) {
+            return;
+        }
+        Set<Instance> instances = serviceMap.get(service.getServiceName());
+        if (null == instances) {
+            return;
+        }
+        for (Instance instance : instances) {
+            if (instance.getIp().equals(service.getInstance().getIp()) && instance.getPort() == service.getInstance()
+                    .getPort()) {
+                instance.setLastUpdateTime(service.getInstance().getLastUpdateTime());
+                break;
+            }
+        }
+    }
+    
+    public Map<String, Map<String, Set<Instance>>> getAllData() {
+        return REGISTER_DATE;
+    }
 }

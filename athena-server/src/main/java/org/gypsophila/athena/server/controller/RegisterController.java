@@ -17,6 +17,7 @@
 package org.gypsophila.athena.server.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.gypsophila.athena.common.constant.AthenaConstant;
 import org.gypsophila.athena.common.enums.ErrorCode;
 import org.gypsophila.athena.common.exception.AthenaException;
 import org.gypsophila.athena.common.pojo.Instance;
@@ -46,14 +47,15 @@ public class RegisterController {
         if (null == parameterMap) {
             return ResponseUtil.fail(ErrorCode.PARAM_ERROR.getCode(), ErrorCode.PARAM_ERROR.getMessage());
         }
-        String namespaces = httpServletRequest.getParameter("namespace");
-        String serviceName = httpServletRequest.getParameter("serviceName");
-        String ip = httpServletRequest.getParameter("ip");
-        String port = httpServletRequest.getParameter("port");
+        String namespaces = httpServletRequest.getParameter(AthenaConstant.NAMESPACE);
+        String serviceName = httpServletRequest.getParameter(AthenaConstant.SERVICE_NAME);
+        String ip = httpServletRequest.getParameter(AthenaConstant.IP);
+        String port = httpServletRequest.getParameter(AthenaConstant.PORT);
         
         this.checkParam(namespaces, serviceName, ip, port);
         
-        Service service = new Service(namespaces, serviceName, new Instance(ip, Integer.parseInt(port), true));
+        Service service = new Service(namespaces, serviceName, true,
+                new Instance(ip, Integer.parseInt(port), System.currentTimeMillis()));
         RegisterCenter.single().register(service);
         return ResponseUtil.success();
     }
@@ -79,14 +81,15 @@ public class RegisterController {
         if (null == parameterMap) {
             return ResponseUtil.fail(ErrorCode.PARAM_ERROR.getCode(), ErrorCode.PARAM_ERROR.getMessage());
         }
-        String namespaces = httpServletRequest.getParameter("namespace");
-        String serviceName = httpServletRequest.getParameter("serviceName");
-        String ip = httpServletRequest.getParameter("ip");
-        String port = httpServletRequest.getParameter("port");
+        String namespaces = httpServletRequest.getParameter(AthenaConstant.NAMESPACE);
+        String serviceName = httpServletRequest.getParameter(AthenaConstant.SERVICE_NAME);
+        String ip = httpServletRequest.getParameter(AthenaConstant.IP);
+        String port = httpServletRequest.getParameter(AthenaConstant.PORT);
         
         this.checkParam(namespaces, serviceName, ip, port);
         
-        Service service = new Service(namespaces, serviceName, new Instance(ip, Integer.parseInt(port), true));
+        Service service = new Service(namespaces, serviceName, true,
+                new Instance(ip, Integer.parseInt(port), System.currentTimeMillis()));
         RegisterCenter.single().cancel(service);
         return ResponseUtil.success();
     }
@@ -98,8 +101,8 @@ public class RegisterController {
         if (null == parameterMap) {
             return ResponseUtil.fail(ErrorCode.PARAM_ERROR.getCode(), ErrorCode.PARAM_ERROR.getMessage());
         }
-        String namespaces = httpServletRequest.getParameter("namespace");
-        String serviceName = httpServletRequest.getParameter("serviceName");
+        String namespaces = httpServletRequest.getParameter(AthenaConstant.NAMESPACE);
+        String serviceName = httpServletRequest.getParameter(AthenaConstant.SERVICE_NAME);
         if (StringUtils.isBlank(namespaces)) {
             throw new AthenaException(ErrorCode.NAMESPACE_NULL.getCode(), ErrorCode.NAMESPACE_NULL.getMessage());
         }
@@ -108,5 +111,25 @@ public class RegisterController {
         }
         Set<Instance> instances = RegisterCenter.single().instanceList(namespaces, serviceName);
         return ResponseUtil.success(instances);
+    }
+    
+    @PostMapping(path = "heartbeat")
+    public Response<Void> heartbeat(HttpServletRequest httpServletRequest) {
+        Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
+        if (null == parameterMap) {
+            return ResponseUtil.fail(ErrorCode.PARAM_ERROR.getCode(), ErrorCode.PARAM_ERROR.getMessage());
+        }
+        String namespaces = httpServletRequest.getParameter(AthenaConstant.NAMESPACE);
+        String serviceName = httpServletRequest.getParameter(AthenaConstant.SERVICE_NAME);
+        String ip = httpServletRequest.getParameter(AthenaConstant.IP);
+        String port = httpServletRequest.getParameter(AthenaConstant.PORT);
+        
+        checkParam(namespaces, serviceName, ip, port);
+        
+        Service service = new Service(namespaces, serviceName, true,
+                new Instance(ip, Integer.parseInt(port), System.currentTimeMillis()));
+        
+        RegisterCenter.single().renewal(service);
+        return ResponseUtil.success();
     }
 }

@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.common.pojo;
+package org.gypsophila.athena.common.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.gypsophila.athena.common.pojo.AthenaTask;
+
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author lixiaoshuang
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Service {
+public class AthenaTaskRun {
     
-    public String namespace;
+    public static final long DEFAULT_PERIOD = TimeUnit.SECONDS.toSeconds(3);
     
-    public String serviceName;
-    
-    private boolean health;
-    
-    public Instance instance;
+    public static void runTask(AthenaTask athenaTask) {
+        AthenaExecutor.SCHEDULED_THREAD_POOL_EXECUTOR
+                .scheduleAtFixedRate(athenaTask, 2, DEFAULT_PERIOD, TimeUnit.SECONDS);
+    }
 }

@@ -19,13 +19,16 @@ package org.gypsophila.athena.client.api.impl;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.gypsophila.athena.client.api.RegisterService;
-import org.gypsophila.athena.client.constant.AthenaConstant;
+import org.gypsophila.athena.client.heartbeat.HeartBeatTask;
 import org.gypsophila.athena.client.remote.AthenaRemoteCallTemplate;
 import org.gypsophila.athena.client.remote.HttpUrl;
 import org.gypsophila.athena.client.remote.JdkHttpClient;
+import org.gypsophila.athena.common.constant.AthenaConstant;
 import org.gypsophila.athena.common.enums.ErrorCode;
 import org.gypsophila.athena.common.exception.AthenaException;
 import org.gypsophila.athena.common.pojo.Response;
+import org.gypsophila.athena.common.util.AthenaExecutor;
+import org.gypsophila.athena.common.util.AthenaTaskRun;
 
 import java.io.IOException;
 import java.util.Map;
@@ -39,8 +42,6 @@ public class AthenaRegisterService implements RegisterService {
     private final String serverIp;
     
     private final int serverPort;
-    
-    private final boolean defaultHealth = true;
     
     private AthenaRemoteCallTemplate athenaRemoteCallTemplate = new JdkHttpClient();
     
@@ -71,6 +72,9 @@ public class AthenaRegisterService implements RegisterService {
         if (response.getCode() != 0) {
             throw new AthenaException(ErrorCode.REGISTER_FAIL.getCode(), ErrorCode.REGISTER_FAIL.getMessage());
         }
+        HeartBeatTask heartBeatTask = new HeartBeatTask(namespace, serviceName, ip, port,
+                HttpUrl.getHeartBeatUrl(serverIp, serverPort));
+        AthenaTaskRun.runTask(heartBeatTask);
     }
     
     private void checkParam(String namespace, String serviceName, String ip, int port) {

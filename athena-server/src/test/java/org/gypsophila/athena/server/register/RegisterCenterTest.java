@@ -22,7 +22,8 @@ public class RegisterCenterTest {
     
     @Test
     public void register() {
-        Service service = new Service("namespace", "athena", new Instance("127.0.0.1", 8888, true));
+        Service service = new Service("namespace", "athena", true,
+                new Instance("127.0.0.1", 8888, System.currentTimeMillis()));
         RegisterCenter.single().register(service);
         
         Set<Instance> instanceSet = RegisterCenter.single().instanceList("namespace", "athena");
@@ -31,8 +32,10 @@ public class RegisterCenterTest {
     
     @Test
     public void cancel() {
-        Service service = new Service("namespace", "athena", new Instance("127.0.0.1", 8888, true));
-        Service service2 = new Service("namespace", "athena", new Instance("127.0.0.2", 9999, true));
+        Service service = new Service("namespace", "athena", true,
+                new Instance("127.0.0.1", 8888, System.currentTimeMillis()));
+        Service service2 = new Service("namespace", "athena", true,
+                new Instance("127.0.0.2", 9999, System.currentTimeMillis()));
         
         RegisterCenter.single().register(service);
         RegisterCenter.single().register(service2);
@@ -41,12 +44,13 @@ public class RegisterCenterTest {
         
         Set<Instance> instanceSet = RegisterCenter.single().instanceList("namespace", "athena");
         
-        Assert.assertTrue(instanceSet.contains(new Instance("127.0.0.2", 9999, true)));
+        Assert.assertTrue(instanceSet.contains(new Instance("127.0.0.2", 9999, System.currentTimeMillis())));
     }
     
     @Test
     public void instanceList() {
-        Service service = new Service("namespace", "athena", new Instance("127.0.0.1", 8888, true));
+        Service service = new Service("namespace", "athena", true,
+                new Instance("127.0.0.1", 8888, System.currentTimeMillis()));
         RegisterCenter.single().register(service);
         
         Set<Instance> instanceSet = RegisterCenter.single().instanceList("namespace", "athena");

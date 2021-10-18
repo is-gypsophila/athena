@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.common.pojo;
+package org.gypsophila.athena.common.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author lixiaoshuang
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Service {
+public class AthenaExecutor {
     
-    public String namespace;
+    public static final ScheduledThreadPoolExecutor SCHEDULED_THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(1,
+            (ThreadFactory) Thread::new);
     
-    public String serviceName;
     
-    private boolean health;
-    
-    public Instance instance;
 }

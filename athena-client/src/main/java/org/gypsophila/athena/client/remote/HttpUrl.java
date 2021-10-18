@@ -33,6 +33,8 @@ public class HttpUrl {
     
     private static final String INSTANCE = SERVER + VERSION + "/register/center/get";
     
+    private static final String HEARTBEAT = SERVER + VERSION + "/register/center/heartbeat";
+    
     
     public static String getRegisterUrl(String ip, int port) {
         return BASE + ip + ":" + port + REGISTER;
@@ -44,5 +46,10 @@ public class HttpUrl {
     
     public static String getInstanceUrl(String ip, int port) {
         return BASE + ip + ":" + port + INSTANCE;
+    }
+    
+    
+    public static String getHeartBeatUrl(String ip, int port) {
+        return BASE + ip + ":" + port + HEARTBEAT;
     }
 }

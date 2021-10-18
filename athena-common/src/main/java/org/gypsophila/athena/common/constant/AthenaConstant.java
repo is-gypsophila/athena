@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gypsophila.athena.client.constant;
+package org.gypsophila.athena.common.constant;
 
 /**
  * @author lixiaoshuang

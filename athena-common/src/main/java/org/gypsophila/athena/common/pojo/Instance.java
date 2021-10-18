@@ -32,5 +32,5 @@ public class Instance {
     
     private int port;
     
-    private boolean health;
+    private long lastUpdateTime;
 }

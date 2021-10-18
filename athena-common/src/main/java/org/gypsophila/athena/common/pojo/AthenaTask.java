@@ -16,23 +16,9 @@
 
 package org.gypsophila.athena.common.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  * @author lixiaoshuang
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Service {
+public interface AthenaTask extends Runnable {
     
-    public String namespace;
-    
-    public String serviceName;
-    
-    private boolean health;
-    
-    public Instance instance;
 }
