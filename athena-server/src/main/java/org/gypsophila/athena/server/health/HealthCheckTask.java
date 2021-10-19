@@ -16,7 +16,7 @@
 
 package org.gypsophila.athena.server.health;
 
-import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gypsophila.athena.common.pojo.AthenaTask;
@@ -26,7 +26,6 @@ import org.gypsophila.athena.server.register.RegisterCenter;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,19 +51,20 @@ public class HealthCheckTask implements AthenaTask {
         if (allData.isEmpty()) {
             return;
         }
-        // TODO: 2021/10/18 修改删除方式
         for (Map.Entry<String, Map<String, Set<Instance>>> stringMapEntry : allData.entrySet()) {
             String namespace = stringMapEntry.getKey();
-            Map<String, Set<Instance>> serviceMap = stringMapEntry.getValue();
+            Map<String, Set<Instance>> serviceMap = allData.get(namespace);
             for (Map.Entry<String, Set<Instance>> stringSetEntry : serviceMap.entrySet()) {
-                Iterator<Instance> iterator = stringSetEntry.getValue().iterator();
-                if (iterator.hasNext()) {
-                    Instance next = iterator.next();
-                    if (System.currentTimeMillis() - next.getLastUpdateTime() >= MAX_RENEWAL_TIME) {
-                        log.error("Instance failure removal,instance:" + JSON.toJSONString(next));
-                        iterator.remove();
+                String serviceName = stringSetEntry.getKey();
+                Set<Instance> instances = serviceMap.get(serviceName);
+                Set<Instance> removeList = Sets.newHashSet();
+                for (Instance instance : instances) {
+                    if (System.currentTimeMillis() - instance.getLastUpdateTime() >= MAX_RENEWAL_TIME) {
+                        removeList.add(instance);
                     }
                 }
+                instances.removeAll(removeList);
+                removeList.clear();
             }
         }
     }

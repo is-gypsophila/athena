@@ -27,7 +27,6 @@ import org.gypsophila.athena.common.constant.AthenaConstant;
 import org.gypsophila.athena.common.enums.ErrorCode;
 import org.gypsophila.athena.common.exception.AthenaException;
 import org.gypsophila.athena.common.pojo.Response;
-import org.gypsophila.athena.common.util.AthenaExecutor;
 import org.gypsophila.athena.common.util.AthenaTaskRun;
 
 import java.io.IOException;
